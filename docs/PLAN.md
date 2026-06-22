@@ -167,6 +167,30 @@ Una vez con las direcciones:
 
 ---
 
+## 6b. Módulo Extras (gráficos + menú debug) — añadido 2026-06-22
+
+`kofxi_training/extras/extras.lua` + `extras_overlay.lua`, cableado en `kofxi.lua`
+**antes** del gate de `in_match()` para que funcione también en los menús de boot/test.
+Todo es RAM-only y reversible (reset = se va).
+
+- **Bilinear toggle (runtime).** El programa corre desde RAM, así que se parchean en
+  vivo los 3 `or` del filtro PowerVR a `nop` (offsets crudos `0x010522`, `0x0B9084`,
+  `0x0B9108` = RAM `0x8C010522/0x8C0B9084/0x8C0B9108`). Es el mismo patch de
+  `ax3201p01.fmem1.dec_bilinear`, pero conmutable. Default = OFF (point sampling).
+  Origs para restaurar: `0x204B`, `0x201B`, `0x212B`. Botón en la ventana "Extras".
+- **Char-engine A/B (diagnóstico "personajes raros").** 3 sitios de código (RAW
+  `0x07C854/0x07EE94/0x08109C`) que difieren entre dump limpio y el `_backup` modificado.
+  La ventana lee su estado en vivo (factory/patched/unknown) y permite ciclar cada uno
+  observe→factory→patched, más "All -> FACTORY". Sirve para confirmar EN VIVO si esos
+  parches son la causa, sin re-flashear. Detalle: `../metodo_parcheo_y_diagnostico.md`.
+- **Explorador del menú debug.** Muestra/loguea las variables de estado del test-menu
+  (`menu_state 0x189128`, `cursor 0x18926C`) para reversear en vivo la transición que
+  abre el menú debug oculto (MUTEKI/No Life/...). `Extras.poke_menu_state(v)` es
+  experimental para probar valores. OJO: los flags de debug (`0x126DF8+`) son internos
+  del menú — el gameplay no los lee, así que NO dan invencibilidad (para eso, Inf Health).
+- Justificación/RE completo: `../estudio_bilinear_y_menus_ocultos.md`,
+  `../ejecutable_alternativo_CHANGELOG.md`.
+
 ## 7. Archivos relevantes
 
 - `flycast-dojo-training/kofxi.lua` — overlay de training (actual).

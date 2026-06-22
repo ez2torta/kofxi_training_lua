@@ -38,9 +38,18 @@ require "kofxi_training.utils.utils"
 require "kofxi_training.players_info"
 require "kofxi_training.state_data.state_data_overlay"
 require "kofxi_training.training.training_overlay"
+require "kofxi_training.extras.extras_overlay"
 
 function Overlay()
     if GAME_ADDRESSES == nil or HIDE_UI then return end
+
+    -- Extras (bilinear toggle, debug-menu explorer) work everywhere, including
+    -- the boot/test menus, so they run BEFORE the in-match gate.
+    Extras.apply()
+    if flycast.config.dojo.ShowTrainingGameOverlay then
+        ExtrasOverlay.window(flycast.ui)
+    end
+
     if not PlayersInfo.in_match() then return end
 
     -- persistent enforcement (runs even if the overlay windows are hidden)
